@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Synthetic Patients and What They Can and Cannot Teach: A Retrospective Analysis of Open-Source Contributions to Synthea</title>
+<meta name="description" content="Synthetic patients and what they can and cannot teach: 7 open-source PRs to Synthea, 6 merged. A claim total that did not add up, a lab range copied from the wrong test, duplicate keys at a million patients, and why generated data teaches pipelines well and outcomes badly.">
+<meta property="og:title" content="Synthetic Patients and What They Can and Cannot Teach: A Retrospective Analysis of Open-Source Contributions to Synthea">
+<meta property="og:description" content="Synthetic patients and what they can and cannot teach: 7 open-source PRs to Synthea, 6 merged. A claim total that did not add up, a lab range copied from the wrong test, duplicate keys at a million patients, and why generated data teaches pipelines well and outcomes badly.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://rtmalikian.github.io/synthetic-patients-synthea-what-they-teach/">
+<meta property="og:site_name" content="Raphael Malikian — Open-Source Clinical AI Research Series">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Synthetic Patients and What They Can and Cannot Teach: A Retrospective Analysis of Open-Source Contributions to Synthea">
+<meta name="twitter:description" content="Synthetic patients and what they can and cannot teach: 7 open-source PRs to Synthea, 6 merged. A claim total that did not add up, a lab range copied from the wrong test, duplicate keys at a million patients, and why generated data teaches pipelines well and outcomes badly.">
+<style>
+  body { font-family: Georgia, 'Times New Roman', serif; color: #1a1a1a; background: #fafafa;
+         max-width: 760px; margin: 0 auto; padding: 2rem 1.25rem 3rem; line-height: 1.6; }
+  h1 { font-size: 1.9rem; line-height: 1.25; margin: 1.2rem 0 0.4rem; }
+  h2 { font-size: 1.3rem; margin-top: 2.2rem; border-bottom: 2px solid #c0392b; padding-bottom: 0.3rem; }
+  .byline { color: #444; font-size: 1.05rem; margin: 0.2rem 0 0.6rem; }
+  .doi { font-size: 1rem; margin: 0.4rem 0 1.4rem; }
+  .download { display: inline-block; background: #c0392b; color: #fff; font-weight: bold;
+               padding: 0.9rem 1.8rem; border-radius: 6px; text-decoration: none; font-size: 1.15rem; }
+  .download:hover { background: #a93226; }
+  .topbar { text-align: center; padding: 1rem 0 0.4rem; }
+  .note { color: #555; font-size: 0.95rem; text-align: center; margin-top: 0.5rem; }
+  .keynumbers { background: #eef3f7; border-left: 4px solid #2e6da4; padding: 0.8rem 1rem; margin: 1.2rem 0; }
+  footer { margin-top: 3rem; border-top: 1px solid #ccc; padding-top: 1rem; color: #555; font-size: 0.95rem; }
+  a { color: #2e6da4; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="download" href="https://github.com/rtmalikian/synthetic-patients-synthea-what-they-teach/raw/main/week4-synthetic-patients.pdf">&#128196; Download the PDF</a>
+  <p class="note">One click, no sign-up, no paywall.</p>
+</div>
+
+<h1>Synthetic Patients and What They Can and Cannot Teach: A Retrospective Analysis of Open-Source Contributions to Synthea</h1>
+<p class="byline">Raphael Malikian | Clinical AI Architect | Independent Researcher</p>
+<p class="doi">Preprint DOI: <a href="https://doi.org/10.5281/zenodo.23964017">10.5281/zenodo.23964017</a> (Zenodo record: <a href="https://zenodo.org/records/23964017">zenodo.org/records/23964017</a>)</p>
+
+<div class="keynumbers"><strong>Key numbers:</strong> 7 pull requests to <a href="https://github.com/synthetichealth/synthea">synthetichealth/synthea</a>, 6 merged, 1 open, 0 closed unmerged. 100 additions, 58 deletions, 20 changed files. Extracted from the GitHub API on 4 November 2026.</div>
+
+<h2>Abstract</h2>
+      <p><strong>Background.</strong> Real patient records sit behind privacy law and institutional review, and they should. Synthetic patients fill the gap. Synthea generates synthetic patients with plausible histories and exports them in formats that include FHIR, so developers can build and test without touching a real chart. That bargain holds only if the synthetic data is realistic in the ways that matter downstream.</p>
+      <p><strong>Purpose.</strong> This study describes one contributor's pull requests (PRs) to Synthea, reports what merged and what did not, and asks what the pattern says about what synthetic patients can teach and what they cannot.</p>
+      <p><strong>Methods.</strong> The data source was the author's public GitHub record, extracted with the GitHub REST API on 4 November 2026 (search: author:rtmalikian, type:pr). The full record held 233 PRs. This paper analyses the Synthea subset: 7 PRs in 1 repository, synthetichealth/synthea. Each PR was classed as merged, open, or closed unmerged. All 7 PRs were read in full, including their public descriptions and changed files.</p>
+      <p><strong>Results.</strong> Six of the 7 subset PRs merged, 1 remained open, and none closed unmerged. Among the 6 resolved PRs, the merge share was 100%. The merged work fixed a claim total that did not equal the sum of its items, a laboratory reference range copied from the wrong measurement (platelet distribution width set to 150 to 520 instead of 9 to 17 fL, corrected in 9 module files), a null-unsafe comparison that could kill a FHIR export run, a file stream left open, string comparisons by identity instead of content, and undocumented configuration precedence. The open PR addresses duplicate primary keys in claim transaction exports at scale, reported with 10,000 patients and again with 1,000,000 patients.</p>
+      <p><strong>Conclusions.</strong> Synthetic patients teach pipeline shape, export format, and billing arithmetic well. They teach clinical outcomes badly. The validation literature found Synthea modelling demographics and service probabilities reliably while returning zero complications after hip and knee replacement and zero controlled blood pressures after hypertension diagnosis, against real rates near 3% and 70%. The cases in this paper point the same way from inside the generator: errors in constants, arithmetic, identity, and export code propagate into every dataset the generator produces. A synthetic dataset deserves the same realism audit that a real dataset gets for completeness and correctness, applied at the generator, before anyone trains on it.</p>
+
+<h2>Finding 1: A lab range copied from the wrong test reached every patient</h2>
+<p>Synthea set platelet distribution width to 150 to 520, the platelet count range, instead of 9 to 17 fL, in nine module files. Every generated patient carried the wrong range. Schema checks passed, because the value was a valid number in a valid field; the range was simply copied from the wrong measurement. The fix (PR #1679, merged) corrected all nine files.</p>
+
+<h2>Finding 2: A claim total that did not add up</h2>
+<p>In FHIR exports, Claim.total did not equal the sum of its item.net values, so the headline figure on a generated claim disagreed with its own line items. Billing pipelines tested against that output would learn the wrong arithmetic. The fix (PR #1676, merged) sets the total to the sum of the items.</p>
+
+<h2>Finding 3: Synthetic patients teach pipelines well and outcomes badly</h2>
+<p>The validation literature found the same limit from outside: in a 1.2 million person Synthea population, complications after hip and knee replacement and controlled blood pressure after hypertension diagnosis both came out at zero, against real rates near 3% and 70%. A generator that models guidelines models ideal care. The paper's open case points at a second scale problem: duplicate primary keys in claim transaction exports, reported at 10,000 patients and again at 1,000,000 patients (PR #1675, open). The paper ends with a realism audit any team can run before trusting a generated dataset: check the arithmetic, the constants and units, key uniqueness at your scale, and outcome rates against real rates.</p>
+
+<h2>Read and reuse</h2>
+<p>Full text, figures and citation: <a href="https://github.com/rtmalikian/synthetic-patients-synthea-what-they-teach">the paper repository on GitHub</a>. Dataset: <a href="https://github.com/rtmalikian/synthetic-patients-synthea-what-they-teach/blob/main/week4_pr_dataset.csv">week4_pr_dataset.csv</a>, the 7 pull requests with status, dates, comment counts, additions, deletions and changed files. Author: <a href="https://github.com/rtmalikian">github.com/rtmalikian</a>.</p>
+
+<footer>
+  <p>Raphael Malikian | Clinical AI Architect | Independent Researcher</p>
+  <p>Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International (CC BY 4.0)</a>.</p>
+</footer>
+
+</body>
+</html>
